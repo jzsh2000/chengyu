@@ -34,11 +34,11 @@ def extract_chengyu(url, chengyu):
 
     soup = BeautifulSoup(response.read())
     if not soup.find('div', id="main"):
-        with open('chengyu.err.txt', 'a') as res_file:
+        with open('db.err.txt', 'a') as res_file:
             res_file.write(chengyu + '\n')
     else:
         chengyu_res = soup.find('div', id="main").find('table').find_all('td')
-        with open('chengyu.txt', 'a') as res_file:
+        with open('db.txt', 'a') as res_file:
             res_file.write('\t'.join([chengyu_res[1].string,
                                       chengyu_res[3].string,
                                       convert_nontype(chengyu_res[5].string)]) +
