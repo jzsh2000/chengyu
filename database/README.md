@@ -8,5 +8,6 @@ Download data
 =============
 
 ```bash
-python download.py
+python script/0.download.py
+bash script/1.four-word.sh
 ```
