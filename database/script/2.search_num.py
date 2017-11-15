@@ -4,30 +4,35 @@
 Get number of search results for each idiom
 '''
 
+import sys
 import urllib
 import urllib2
-from bs4 import BeautifulSoup
 import re
+from bs4 import BeautifulSoup
 
 def search_baidu(word):
+    ''' search chengyu in baidu.com '''
     data = urllib.urlencode({'q2': word})
     request = urllib2.Request('http://www.baidu.com/s?' + data)
-    response = urllib2.urlopen(request)
+    try:
+        response = urllib2.urlopen(request)
+    except urllib2.HTTPError:
+        return 'error'
+
     soup = BeautifulSoup(response.read())
     return re.findall('[0-9,]+',
-                     soup.find('div', class_="nums").get_text())[0]
+                      soup.find('div', class_="nums").get_text())[0]
 
-def search_googld(word):
-    pass
+if len(sys.argv) == 1:
+    sys.stderr.write(' '.join(['python', sys.argv[0], 'chengyu.txt']) + '\n')
+    sys.exit(0)
+else:
+    chengyu_file = sys.argv[1]
 
-def search_bing(word):
-    pass
-
-with open('test.txt', 'r') as chengyu_file:
+with open(chengyu_file, 'r') as chengyu_file:
     while True:
         line = chengyu_file.readline()
         if not line:
             break
         chengyu = line.strip()
-        print chengyu
-        print search_baidu(chengyu)
+        print chengyu, search_baidu(chengyu)
