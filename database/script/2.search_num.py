@@ -19,7 +19,7 @@ def search_baidu(word):
     except urllib2.HTTPError:
         return 'error'
 
-    soup = BeautifulSoup(response.read())
+    soup = BeautifulSoup(response.read(), "html.parser")
     return re.findall('[0-9,]+',
                       soup.find('div', class_="nums").get_text())[0]
 
