@@ -49,8 +49,9 @@ db_baidu <- read_delim('chengyu.baidu.txt', delim = ' ',
     mutate(n = as.integer(str_replace_all(n, ',', '')))
 
 db_full_baidu = db_full %>%
-    left_join(db_baidu, by = 'chengyu') %>%
+    inner_join(db_baidu, by = 'chengyu') %>%
     mutate(rank = min_rank(desc(n)),
-           popular = (n >= 1000000))
+           popular = (n >= 1000000)) %>%
+    arrange(chengyu)
 
 write_feather(db_full_baidu, 'chengyu.feather')
