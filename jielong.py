@@ -19,6 +19,7 @@ chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2.values[0]
 chengyu_cur_pinyin = chengyu_cur_dat.pinyin.values[0]
 
 print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+chengyu_history = [chengyu_cur]
 
 if '-a' in sys.argv:
     while True:
@@ -26,11 +27,23 @@ if '-a' in sys.argv:
                                      (chengyu_df.popular)]
         if chengyu_cur_dat.shape[0] < 1:
             break
-        chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False).iloc[0]
-        chengyu_cur = chengyu_cur_dat.chengyu
-        chengyu_cur_pinyin = chengyu_cur_dat.pinyin
-        chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2
-        print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+
+        chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False)
+        chengyu_flag = False
+        for i in xrange(chengyu_cur_dat.shape[0]):
+            chengyu_cur = chengyu_cur_dat.iloc[i].chengyu
+            if chengyu_cur not in chengyu_history:
+                chengyu_flag = True
+                chengyu_cur_dat = chengyu_cur_dat.iloc[i]
+                break
+
+        if chengyu_flag:
+            chengyu_history.append(chengyu_cur)
+            chengyu_cur_pinyin = chengyu_cur_dat.pinyin
+            chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2
+            print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+        else:
+            break
 else:
     while True:
         chengyu_user = raw_input().strip().decode('utf-8')
