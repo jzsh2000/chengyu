@@ -4,6 +4,7 @@
 chengyu jielong
 '''
 
+import sys
 import random
 import feather
 
@@ -19,25 +20,37 @@ chengyu_cur_pinyin = chengyu_cur_dat.pinyin.values[0]
 
 print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
 
-while True:
-    chengyu_user = raw_input().strip().decode('utf-8')
-    chengyu_user_dat = chengyu_df[chengyu_df.chengyu == chengyu_user]
-    if chengyu_user_dat.shape[0] < 1:
-        print '*** Game Over! ***'
-        break
-    elif chengyu_user_dat.pinyin_head2.values[0] != chengyu_cur_tail:
-        print '+++ Game Over! +++'
-        break
-    else:
-        chengyu_user_tail = chengyu_user_dat.pinyin_tail2.values[0]
-        chengyu_cur_dat = chengyu_df[(chengyu_df.pinyin_head2 == chengyu_user_tail) &
+if '-a' in sys.argv:
+    while True:
+        chengyu_cur_dat = chengyu_df[(chengyu_df.pinyin_head2 == chengyu_cur_tail) &
                                      (chengyu_df.popular)]
         if chengyu_cur_dat.shape[0] < 1:
-            print '--- You Win! ---'
+            break
+        chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False).iloc[0]
+        chengyu_cur = chengyu_cur_dat.chengyu
+        chengyu_cur_pinyin = chengyu_cur_dat.pinyin
+        chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2
+        print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+else:
+    while True:
+        chengyu_user = raw_input().strip().decode('utf-8')
+        chengyu_user_dat = chengyu_df[chengyu_df.chengyu == chengyu_user]
+        if chengyu_user_dat.shape[0] < 1:
+            print '*** Game Over! ***'
+            break
+        elif chengyu_user_dat.pinyin_head2.values[0] != chengyu_cur_tail:
+            print '+++ Game Over! +++'
             break
         else:
-            chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False).iloc[0]
-            chengyu_cur = chengyu_cur_dat.chengyu
-            chengyu_cur_pinyin = chengyu_cur_dat.pinyin
-            chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2
-            print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+            chengyu_user_tail = chengyu_user_dat.pinyin_tail2.values[0]
+            chengyu_cur_dat = chengyu_df[(chengyu_df.pinyin_head2 == chengyu_user_tail) &
+                                        (chengyu_df.popular)]
+            if chengyu_cur_dat.shape[0] < 1:
+                print '--- You Win! ---'
+                break
+            else:
+                chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False).iloc[0]
+                chengyu_cur = chengyu_cur_dat.chengyu
+                chengyu_cur_pinyin = chengyu_cur_dat.pinyin
+                chengyu_cur_tail = chengyu_cur_dat.pinyin_tail2
+                print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
