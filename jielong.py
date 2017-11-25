@@ -4,9 +4,15 @@
 chengyu jielong
 '''
 
-import sys
 import random
+import argparse
 import feather
+
+parser = argparse.ArgumentParser(description='chengyu jielong')
+parser.add_argument('-a', '--auto',
+                    help='auto continue jielong',
+                    action='store_true')
+args = parser.parse_args()
 
 chengyu_df = feather.read_dataframe('database/chengyu.feather')
 with open('database/chengyu.start.3.txt') as f:
@@ -21,7 +27,7 @@ chengyu_cur_pinyin = chengyu_cur_dat.pinyin.values[0]
 print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
 chengyu_history = [chengyu_cur]
 
-if '-a' in sys.argv:
+if args.auto:
     while True:
         chengyu_cur_dat = chengyu_df[(chengyu_df.pinyin_head2 == chengyu_cur_tail) &
                                      (chengyu_df.popular)]
@@ -57,7 +63,7 @@ else:
         else:
             chengyu_user_tail = chengyu_user_dat.pinyin_tail2.values[0]
             chengyu_cur_dat = chengyu_df[(chengyu_df.pinyin_head2 == chengyu_user_tail) &
-                                        (chengyu_df.popular)]
+                                         (chengyu_df.popular)]
             if chengyu_cur_dat.shape[0] < 1:
                 print '--- You Win! ---'
                 break
