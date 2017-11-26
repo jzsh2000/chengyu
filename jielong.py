@@ -4,6 +4,7 @@
 chengyu jielong
 '''
 
+import sys
 import random
 import argparse
 import feather
@@ -15,11 +16,10 @@ parser.add_argument('-a', '--auto',
 parser.add_argument('-t', '--type',
                     help='jielong type',
                     type=int, choices=[0, 1, 2], default=2)
+parser.add_argument('-s', '--start',
+                    help='define the first chengyu',
+                    default='')
 args = parser.parse_args()
-
-chengyu_df = feather.read_dataframe('database/chengyu.feather')
-with open('database/chengyu.start.3.txt') as f:
-    chengyu_start = f.readlines()
 
 if args.type == 0:
     head_column = 'chengyu_head'
@@ -31,8 +31,19 @@ else:
     head_column = 'pinyin_head2'
     tail_column = 'pinyin_tail2'
 
-chengyu_cur = random.choice(chengyu_start).strip().decode('utf-8')
-chengyu_cur_dat = chengyu_df[chengyu_df.chengyu == chengyu_cur]
+chengyu_df = feather.read_dataframe('database/chengyu.feather')
+with open('database/chengyu.start.3.txt') as f:
+    chengyu_start = f.readlines()
+
+if args.start != '':
+    chengyu_cur = args.start.strip().decode('utf-8')
+    chengyu_cur_dat = chengyu_df[chengyu_df.chengyu == chengyu_cur]
+    if chengyu_cur_dat.shape[0] < 1:
+        print 'Error: chengyu not in database'
+        sys.exit(1)
+else:
+    chengyu_cur = random.choice(chengyu_start).strip().decode('utf-8')
+    chengyu_cur_dat = chengyu_df[chengyu_df.chengyu == chengyu_cur]
 
 chengyu_cur_tail = chengyu_cur_dat[tail_column].values[0]
 chengyu_cur_pinyin = chengyu_cur_dat.pinyin.values[0]
