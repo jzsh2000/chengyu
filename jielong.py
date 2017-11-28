@@ -22,17 +22,20 @@ parser.add_argument('-s', '--start',
 args = parser.parse_args()
 
 if args.type == 0:
+    chengyu_start_file = 'database/chengyu.start.1.txt'
     head_column = 'chengyu_head'
     tail_column = 'chengyu_tail'
 elif args.type == 1:
+    chengyu_start_file = 'database/chengyu.start.2.txt'
     head_column = 'pinyin_head'
     tail_column = 'pinyin_tail'
 else:
+    chengyu_start_file = 'database/chengyu.start.3.txt'
     head_column = 'pinyin_head2'
     tail_column = 'pinyin_tail2'
 
 chengyu_df = feather.read_dataframe('database/chengyu.feather')
-with open('database/chengyu.start.3.txt') as f:
+with open(chengyu_start_file) as f:
     chengyu_start = f.readlines()
 
 if args.start != '':
