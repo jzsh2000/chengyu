@@ -8,6 +8,8 @@ import sys
 import random
 import argparse
 import feather
+import numpy as np
+from numpy.random import choice
 
 parser = argparse.ArgumentParser(description='chengyu jielong')
 parser.add_argument('-a', '--auto',
@@ -57,27 +59,25 @@ chengyu_history = [chengyu_cur]
 if args.auto:
     while True:
         chengyu_cur_dat = chengyu_df[(chengyu_df[head_column] == chengyu_cur_tail) &
-                                     (chengyu_df.popular)]
+                                     (chengyu_df.popular) &
+                                     (~chengyu_df.chengyu.isin(chengyu_history))]
 
         if chengyu_cur_dat.shape[0] < 1:
             break
 
-        chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False)
-        chengyu_flag = False
-        for i in xrange(chengyu_cur_dat.shape[0]):
-            chengyu_cur = chengyu_cur_dat.iloc[i].chengyu
-            if chengyu_cur not in chengyu_history:
-                chengyu_flag = True
-                chengyu_cur_dat = chengyu_cur_dat.iloc[i]
-                break
+        # chengyu_cur_dat = chengyu_cur_dat.sort_values('n', ascending=False)
+        chengyu_p = chengyu_cur_dat.n.values
+        chengyu_p = np.array(chengyu_p) / (np.sum(chengyu_p) + .0)
+        chengyu_iloc = choice(range(chengyu_cur_dat.shape[0]),
+                              p=chengyu_p)
+        chengyu_cur_dat = chengyu_cur_dat.iloc[chengyu_iloc]
+        chengyu_cur = chengyu_cur_dat.chengyu
 
-        if chengyu_flag:
-            chengyu_history.append(chengyu_cur)
-            chengyu_cur_pinyin = chengyu_cur_dat.pinyin
-            chengyu_cur_tail = chengyu_cur_dat[tail_column]
-            print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
-        else:
-            break
+        chengyu_history.append(chengyu_cur)
+        chengyu_cur_pinyin = chengyu_cur_dat.pinyin
+        chengyu_cur_tail = chengyu_cur_dat[tail_column]
+        print chengyu_cur + ' [' + chengyu_cur_pinyin + ']'
+
 else:
     while True:
         chengyu_user = raw_input().strip().decode('utf-8')
